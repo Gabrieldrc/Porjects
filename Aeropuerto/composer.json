@@ -11,6 +11,7 @@
         "mongodb/mongodb": "*",
         "phpunit/phpunit": "*",
         "slim/slim": "4.*",
-        "slim/psr7": "^1.0"
+        "slim/psr7": "^1.0",
+        "twig/twig": "^3.0"
     }
 }
