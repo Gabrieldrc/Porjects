@@ -3,11 +3,14 @@
     "autoload": {
         "psr-4": {
             "Src\\": "src/",
-            "Test\\": "tests/"
+            "Test\\": "tests/",
+            "Templates\\": "templates/"
         }
     },
     "require": {
         "mongodb/mongodb": "*",
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.0"
     }
 }
