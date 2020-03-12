@@ -1,0 +1,81 @@
+Aeropuerto:
+
+SERVICIOS:
+
+-   VueloServicio.php
+    - public function __construct($collection)
+    - public function avilitarNuevoAvion(int $puestos, string $ubicacion): int //0 si no se insertó o 1 si se insertó
+    - public function buscarAvionSinVuelo($ubicacion): Avion | AvionFalse
+    - public function buscarAvionPorVueloId($$idVuelo): Avion | AvionFalse
+    - public function asignarVuelo($idVuelo, $ubicacion, $destino): Avion | AvionFalse
+    - public function realizarVuelo($idVuelo): Avion | AvionFalse
+    - añadirPersona(obj $boleto)
+    - verificarFull(): Bool
+    
+-	RegistroDeVuelosServicio:
+    - public function __construct($collection)
+    - public function registrarVuelo(String $origen, String $destino): int //0 si no se insertó o 1 si se insertó
+    - public function verificarSiElVueloYaFueRegistrado(String $origen, String $destino): Bool
+	- public function mostrarVuelos(String $origen, $destino = null): array
+	- public function asignarAvionEnRegistro(\Src\Modelos\Avion $avion): Bool
+	- public function culminarVuelo(Modelos\Avion $avion): Bool
+    
+
+-	BOLETERIA (venta de boletos):
+
+	ventaBoletos( String $nombre, obj $DI,  int $money, int $idVuelo): obj $boleto
+	combosComida( $boleto, int $money): Bool
+	verificarVuelos(String $origen, String $destino, int $hora): Bool
+	opciones( String $origen, String $destino, int $hora): array $opciones
+	
+
+-	SERVICIO DE COMIDA:
+
+	__construct($idVuelo)
+	RepartirComida($idVuelo): Bool
+
+
+-	SEGURIDAD:
+
+	__construct($idVuelo)
+	verificarBoletos(obj $DI, obj $boleto): Bool
+	
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MODELOS:
+-	DI (documento identidad):
+
+	String $nombre;
+	int $DNI;
+	int $edad;
+	String $origen;
+	String $destino;
+	int $capital;
+	Bool $comida;
+	
+-	BOLETO:
+
+	String $nombre;
+	int $DNI;
+	int $edad;
+	String $origen;
+	String $destino;
+	Bool $comida

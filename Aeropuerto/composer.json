@@ -1,0 +1,13 @@
+{
+    "name": "gabriel/aeropuerto",
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/",
+            "Test\\": "tests/"
+        }
+    },
+    "require": {
+        "mongodb/mongodb": "*",
+        "phpunit/phpunit": "*"
+    }
+}
