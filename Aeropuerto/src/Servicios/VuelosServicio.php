@@ -23,6 +23,7 @@ class VuelosServicio
        ]);
 
         return $insertOneResult->getInsertedCount();
+
     }
 
     public function buscarAvionSinVuelo($ubicacion)
@@ -39,10 +40,13 @@ class VuelosServicio
                 $avionData['idVuelo'],
                 $avionData['destino']
             );
+
             return $avion;
+
         }
 
         return new AvionFalse();
+
     }
 
     public function buscarAvionPorVueloId($idVuelo)
@@ -59,11 +63,35 @@ class VuelosServicio
                 $avionData['destino']
             );
 
-            
             return $avion;
+
         }
 
         return new AvionFalse();
+
+    }
+
+    public function buscarAviones()
+    {
+        $avionesData = $this->collection->find([]);
+        $listaAviones = [];
+        if (is_null($avionesData)) {
+
+            return $listaAviones;
+
+        }
+        foreach ($avionesData as $avionData) {
+            $listaAviones [] = [
+                $avionData['avionId'],
+                $avionData['puestos'],
+                $avionData['ubicacion'],
+                $avionData['idVuelo'],
+                $avionData['destino'],
+            ];
+        }
+
+        return $listaAviones;
+
     }
 
     public function asignarVuelo($idVuelo, $ubicacion, $destino)
@@ -80,10 +108,14 @@ class VuelosServicio
             if($updateResult->getModifiedCount() >0){
                 return $avion;
             } else {
+
                 return new AvionFalse();
+
             }
         } else {
+
             return new AvionFalse();
+
         }
     }
 
@@ -102,9 +134,13 @@ class VuelosServicio
                     ]
                 ]
             );
+
             return $avion;
+
         } else {
+
             return new AvionFalse();
+
         }
     }
 }
