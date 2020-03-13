@@ -19,17 +19,15 @@ final class RegistroDeVuelosTest extends \PHPUnit\Framework\TestCase
     {
         $return = $this->rService->registrarVuelo('CABA', 'Madrid');
         $vuelo = $this->RegistroCollection->findOne(['origen' => 'CABA']);
-        $this->assertEquals(1, $return);
+        $this->assertTrue($return);
         $this->assertFalse(is_null($vuelo));
     }
 
     public function testNoRegistrarElMismoVueloMasDeUnaVez()
     {
         $this->rService->registrarVuelo('CABA', 'Madrid');
-        $this->RegistroCollection->findOne(['origen' => 'CABA']);
         $return = $this->rService->registrarVuelo('CABA', 'Madrid');
-        $vuelo = $this->RegistroCollection->findOne(['origen' => 'CABA']);
-        $this->assertEquals(0, $return);
+        $this->assertFalse($return);
     }
 
     public function testMostrarVuelosSinDestino()

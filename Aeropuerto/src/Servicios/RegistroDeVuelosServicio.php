@@ -17,7 +17,7 @@ class RegistroDeVuelosServicio
         String $destino
     ) {
         if ($this->verificarSiElVueloYaFueRegistrado($origen, $destino)) {
-            return 0;
+            return False;
         } else {
             $vuelo =
             [
@@ -29,7 +29,10 @@ class RegistroDeVuelosServicio
             ];
             $insertOneResult = $this->collection->insertOne($vuelo);
 
-            return $insertOneResult->getInsertedCount();
+            if ($insertOneResult->getInsertedCount() > 0) {
+                return True;
+            }
+            return False;
         }
     }
 
@@ -51,13 +54,15 @@ class RegistroDeVuelosServicio
             return true;
         }
     }
-    public function mostrarVuelos(String $origen, $destino = null)
+    public function mostrarVuelos(String $origen = null, String $destino = null)
     {
-        if (is_null($destino)) {
+        if (is_null($origen)) {
+            $datos = $this->collection->find([]);
+        } elseif (is_null($destino)) {
             $datos = $this->collection->find(
                 [
                     'origen' => $origen,
-                    'done' => false,
+                    // 'done' => false,
                 ]
             );
         } else {
@@ -65,7 +70,7 @@ class RegistroDeVuelosServicio
                 [
                     'origen' => $origen,
                     'destino' => $destino,
-                    'done' => false,
+                    // 'done' => false,
                 ]
             );
         }
@@ -77,6 +82,7 @@ class RegistroDeVuelosServicio
                 'origen' => $dato['origen'],
                 'destino' => $dato['destino'],
                 'done' => $dato['done'],
+                'avionAsignado' => $dato['avionAsignado'],
             ];
             $vuelos[] = $vuelo;
         }
