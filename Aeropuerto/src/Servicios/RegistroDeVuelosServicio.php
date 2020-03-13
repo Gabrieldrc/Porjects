@@ -17,23 +17,28 @@ class RegistroDeVuelosServicio
         String $destino
     ) {
         if ($this->verificarSiElVueloYaFueRegistrado($origen, $destino)) {
-            return False;
-        } else {
-            $vuelo =
-            [
-                'idVuelo' => md5(microtime()),
-                'origen' => $origen,
-                'destino' => $destino,
-                'done' => false,
-                'avionAsignado' => 'No Asignado',
-            ];
-            $insertOneResult = $this->collection->insertOne($vuelo);
 
-            if ($insertOneResult->getInsertedCount() > 0) {
-                return True;
-            }
             return False;
+
         }
+        $vuelo =
+        [
+            'idVuelo' => md5(microtime()),
+            'origen' => $origen,
+            'destino' => $destino,
+            'done' => false,
+            'avionAsignado' => 'No Asignado',
+        ];
+        $insertOneResult = $this->collection->insertOne($vuelo);
+
+        if ($insertOneResult->getInsertedCount() > 0) {
+
+            return True;
+
+        }
+
+        return False;
+
     }
 
     public function verificarSiElVueloYaFueRegistrado(
@@ -49,11 +54,16 @@ class RegistroDeVuelosServicio
             ]
         );
         if (is_null($vuelo)) {
+
             return false;
+
         } else {
+
             return true;
+
         }
     }
+
     public function mostrarVuelos(String $origen = null, String $destino = null)
     {
         if (is_null($origen)) {
@@ -62,7 +72,6 @@ class RegistroDeVuelosServicio
             $datos = $this->collection->find(
                 [
                     'origen' => $origen,
-                    // 'done' => false,
                 ]
             );
         } else {
@@ -70,7 +79,6 @@ class RegistroDeVuelosServicio
                 [
                     'origen' => $origen,
                     'destino' => $destino,
-                    // 'done' => false,
                 ]
             );
         }
@@ -86,7 +94,9 @@ class RegistroDeVuelosServicio
             ];
             $vuelos[] = $vuelo;
         }
+    
         return $vuelos;
+
     }
 
     public function asignarAvionEnRegistro(\Src\Modelos\Avion $avion)
@@ -97,10 +107,14 @@ class RegistroDeVuelosServicio
                 ['$set' => ['avionAsignado' => $avion->getAvionId()]]
             );
             if ($updateResult->getModifiedCount() == 1) {
+
                 return true;
+
             }
         }
+
         return false;
+
     }
 
     public function culminarVuelo(Modelos\Avion $avion)

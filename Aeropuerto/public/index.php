@@ -11,7 +11,9 @@ if (PHP_SAPI == 'cli-server') {
     $url  = parse_url($_SERVER['REQUEST_URI']);
     $file = __DIR__ . $url['path'];
     if (is_file($file)) {
+
         return false;
+
     }
 }
 
@@ -31,7 +33,9 @@ $app->get('/home', function (Request $request, Response $response, $args) use ($
     $response->getBody()->write(
         $template->render(['Titulo' => 'Gabriel Airlines'])
     );
+
     return $response;
+
 });
 
 $app->get('/registro', function (Request $request, Response $response, $args) use ($twig, $registroDeVuelosServicio) {
@@ -42,7 +46,9 @@ $app->get('/registro', function (Request $request, Response $response, $args) us
             'listaVuelos' => $registroDeVuelosServicio->mostrarVuelos(),
             ])
     );
+
     return $response;
+
 });
 
 $app->get('/registro/nuevoVuelo/{error}', function (Request $request, Response $response, $args) use ($twig) {
@@ -50,22 +56,41 @@ $app->get('/registro/nuevoVuelo/{error}', function (Request $request, Response $
     $response->getBody()->write(
         $template->render([
             'Titulo' => 'Gabriel Airlines',
-            'Error' => ($args['error'] == 'error') ? True : False,
-            ])
+            'Error' => ($args['error'] == 'error') ? true : false,
+        ])
     );
+
     return $response;
+
 });
 
 $app->post('/nuevoVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService, $registroDeVuelosServicio) {
     $result = $registroDeVuelosServicio->registrarVuelo($_POST['origen'], $_POST['destino']);
-    if ($result == False) {
+    if ($result == false) {
         $response = $response->withStatus(302);
-        $response = $response->withHeader("Location","/registro/nuevoVuelo/error");
-        return $response;  
-    } 
+        $response = $response->withHeader('Location', '/registro/nuevoVuelo/error');
+
+        return $response;
+
+    }
     $response = $response->withStatus(302);
-    $response = $response->withHeader("Location","/registro");
-    return $response; 
+    $response = $response->withHeader('Location', '/registro');
+
+    return $response;
+
+});
+
+$app->get('/aviones', function (Request $request, Response $response, $args) use ($twig, $registroDeVuelosServicio) {
+    $template = $twig->load('aviones.html');
+    $response->getBody()->write(
+        $template->render([
+            'Titulo' => 'Gabriel Airlines',
+            'listaVuelos' => $registroDeVuelosServicio->mostrarVuelos(),
+            ])
+    );
+
+    return $response;
+
 });
 
 $app->run();

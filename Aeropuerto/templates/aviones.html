@@ -2,14 +2,14 @@
 
 {% block content %}
     <h1>Aeropuerto: Registro de vuelos</h1>
-    <a href = "/registro/nuevoVuelo/new">Agregar nuevo vuelo</a></br></br></br>
+    <a href = "/registro/nuevoAvion/new">Agregar nuevo vuelo</a></br></br></br>
     <table border="1" bordercolor="black">
     <tr>
-        <td><strong>Id Vuelos</strong></td>
         <td><strong>Id Avión</strong></td>
-        <td><strong>Origen</strong></td>
+        <td><strong>Ubicación Actual</strong></td>
+        <td><strong>Puestos</strong></td>
         <td><strong>Destino</strong></td>
-        <td><strong>Estado</strong></td>
+        <td><strong>Id Vuelos</strong></td>
     </tr>
     {% for vuelo in listaVuelos %}
     <tr>
