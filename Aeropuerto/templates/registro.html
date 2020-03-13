@@ -2,7 +2,33 @@
 
 {% block content %}
     <h1>Aeropuerto: Registro de vuelos</h1>
-    <p>{{idVuelo}}_____{{avionAsignado}}_____{{origen}}_____{{destino}}_____{{done}}</p>
-
+    <a href = "/registro/nuevoVuelo/new">Agregar nuevo vuelo</a></br></br></br>
+    <table>
+    <tr>
+        <td><strong>Id Vuelos</strong></td>
+        <td><strong>Id Avión</strong></td>
+        <td><strong>Origen</strong></td>
+        <td><strong>Destino</strong></td>
+        <td><strong>Estado</strong></td>
+    </tr>
+    {% for vuelo in listaVuelos %}
+    <tr>
+        <td>{{vuelo.idVuelo}}</td>
+        <td>{{vuelo.avionAsignado}}</td>
+        <td>{{vuelo.origen}}</td>
+        <td>{{vuelo.destino}}</td>
+        {% if vuelo.done == true %}
+            <td>Terminado</td>
+        {% elseif vuelo.avionAsignado == 'No Asignado'%}
+            <td>Programado</td>
+        {% else %}
+            <td>Confirmado</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </table>
+    {% if listaVuelos == false %}
+        <p>No hay vuelos registrados.</p>
+    {% endif %}
     <a href = "/home">Regresar</a></br></br></br>
 {% endblock %}

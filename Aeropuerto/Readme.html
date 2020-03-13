@@ -16,7 +16,7 @@ SERVICIOS:
     - public function __construct($collection)
     - public function registrarVuelo(String $origen, String $destino): int //0 si no se insertó o 1 si se insertó
     - public function verificarSiElVueloYaFueRegistrado(String $origen, String $destino): Bool
-	- public function mostrarVuelos(String $origen, $destino = null): array
+	- public function mostrarVuelos(String $origen = null, $destino = null): array
 	- public function asignarAvionEnRegistro(\Src\Modelos\Avion $avion): Bool
 	- public function culminarVuelo(Modelos\Avion $avion): Bool
     

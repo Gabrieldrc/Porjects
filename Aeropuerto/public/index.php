@@ -22,7 +22,7 @@ $twig = new \Twig\Environment($loader, [
 
 $conn = new \MongoDB\Client("mongodb://localhost");
 $vuelosService = new \Src\Servicios\VuelosServicio($conn->vuelosServicios->aviones);
-$registroDeVuelosServicio = new \Src\Servicios\VuelosServicio($conn->registroDeVuelosServicios->registroDeVuelos);
+$registroDeVuelosServicio = new \Src\Servicios\RegistroDeVuelosServicio($conn->registroDeVuelosServicios->registroDeVuelos);
 
 $app = AppFactory::create();
 
@@ -34,16 +34,38 @@ $app->get('/home', function (Request $request, Response $response, $args) use ($
     return $response;
 });
 
-$app->get('/registro', function (Request $request, Response $response, $args) use ($twig, $vuelosService, $registroDeVuelosServicio) {
-    $template = $twig->load('index.html');
-    // $listaVuelos = $registroDeVuelosServicio
+$app->get('/registro', function (Request $request, Response $response, $args) use ($twig, $registroDeVuelosServicio) {
+    $template = $twig->load('registro.html');
     $response->getBody()->write(
         $template->render([
             'Titulo' => 'Gabriel Airlines',
-            'idVuelo' => 
+            'listaVuelos' => $registroDeVuelosServicio->mostrarVuelos(),
             ])
     );
     return $response;
+});
+
+$app->get('/registro/nuevoVuelo/{error}', function (Request $request, Response $response, $args) use ($twig) {
+    $template = $twig->load('formularioNuevoVuelo.html');
+    $response->getBody()->write(
+        $template->render([
+            'Titulo' => 'Gabriel Airlines',
+            'Error' => ($args['error'] == 'error') ? True : False,
+            ])
+    );
+    return $response;
+});
+
+$app->post('/nuevoVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService, $registroDeVuelosServicio) {
+    $result = $registroDeVuelosServicio->registrarVuelo($_POST['origen'], $_POST['destino']);
+    if ($result == False) {
+        $response = $response->withStatus(302);
+        $response = $response->withHeader("Location","/registro/nuevoVuelo/error");
+        return $response;  
+    } 
+    $response = $response->withStatus(302);
+    $response = $response->withHeader("Location","/registro");
+    return $response; 
 });
 
 $app->run();

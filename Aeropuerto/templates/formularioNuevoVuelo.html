@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Aeropuerto: Registro de vuelos</h1>
+    <div>
+        <h4>Registrar nuevo vuelo:</h4>
+        <form action="/nuevoVuelo" method="post">
+            <p>Origen de vuelo:</p>
+            <input type="text" name="origen">
+            <p>Destino de vuelo:</p>
+            <input type="text" name="destino">
+            <input type="submit" value="Registrar">
+        </form>
+    </div>
+    {% if Error == 'error' %}
+        <p style="color:#FF0000";>El vuelo ya fue registrado.</p>
+    {% endif %}
+    <a href = "/registro">Regresar</a></br></br></br>
+{% endblock %}
