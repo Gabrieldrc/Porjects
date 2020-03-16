@@ -64,7 +64,7 @@ $app->get('/registro/nuevoVuelo/{error}', function (Request $request, Response $
 
 });
 
-$app->post('/nuevoVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService, $registroDeVuelosServicio) {
+$app->post('/nuevoVuelo', function (Request $request, Response $response, $args) use ($twig, $registroDeVuelosServicio) {
     $result = $registroDeVuelosServicio->registrarVuelo($_POST['origen'], $_POST['destino']);
     if ($result == false) {
         $response = $response->withStatus(302);
@@ -80,12 +80,12 @@ $app->post('/nuevoVuelo', function (Request $request, Response $response, $args)
 
 });
 
-$app->get('/aviones', function (Request $request, Response $response, $args) use ($twig, $registroDeVuelosServicio) {
+$app->get('/aviones', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
     $template = $twig->load('aviones.html');
     $response->getBody()->write(
         $template->render([
             'Titulo' => 'Gabriel Airlines',
-            'listaVuelos' => $registroDeVuelosServicio->mostrarVuelos(),
+            'listaVuelos' => $vuelosService->buscarAviones(),
             ])
     );
 
