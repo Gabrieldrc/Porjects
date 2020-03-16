@@ -1,29 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Aeropuerto: Registro de vuelos</h1>
-    <a href = "/registro/nuevoAvion/new">Agregar nuevo vuelo</a></br></br></br>
+    <h1>Aeropuerto: Listado de aviones</h1>
+    <a href = "/aviones/nuevoAvion/new">Habilitar un avion</a></br></br></br>
     <table border="1" bordercolor="black">
     <tr>
         <td><strong>Id Avión</strong></td>
         <td><strong>Ubicación Actual</strong></td>
         <td><strong>Puestos</strong></td>
         <td><strong>Destino</strong></td>
-        <td><strong>Id Vuelos</strong></td>
+        <td><strong>Id Vuelo</strong></td>
     </tr>
     {% for vuelo in listaVuelos %}
     <tr>
-        <td>{{vuelo.idVuelo}}</td>
-        <td>{{vuelo.avionAsignado}}</td>
-        <td>{{vuelo.origen}}</td>
+        <td>{{vuelo.avionId}}</td>
+        <td>{{vuelo.puestos}}</td>
+        <td>{{vuelo.ubicacion}}</td>
         <td>{{vuelo.destino}}</td>
-        {% if vuelo.done == true %}
-            <td>Terminado</td>
-        {% elseif vuelo.avionAsignado == 'No Asignado'%}
-            <td>Programado</td>
-        {% else %}
-            <td>Confirmado</td>
-        {% endif %}
+        <td>{{vuelo.idVuelo}}</td>
     </tr>
     {% endfor %}
     </table>
