@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Aeropuerto: Listado de aviones</h1>
+    <div>
+        <h4>Habilitar nuevo avión:</h4>
+        <form action="/nuevoAvion" method="post">
+            <p>Ubicacion:</p>
+            <input type="text" name="ubicacion">
+            <p>Puestos:</p>
+            <input type="number" name="puestos" min = '10' max = '500'>
+            <input type="submit" value="Habilitar">
+        </form>
+    </div>
+    {% if Error == 'error' %}
+        <p style="color:#FF0000";>El avion no pudo ser habilitado. Intente mas tarde.</p>
+    {% endif %}
+    <a href = "/aviones">Regresar</a></br></br></br>
+{% endblock %}

@@ -80,14 +80,16 @@ class VuelosServicio
             return $listaAviones;
 
         }
+        $listaAviones = [];
         foreach ($avionesData as $avionData) {
-            $listaAviones [] = [
-                $avionData['avionId'],
-                $avionData['puestos'],
-                $avionData['ubicacion'],
-                $avionData['idVuelo'],
-                $avionData['destino'],
+            $avion = [
+                'avionId' => $avionData['avionId'],
+                'puestos' => $avionData['puestos'],
+                'ubicacion' => $avionData['ubicacion'],
+                'idVuelo' => $avionData['idVuelo'],
+                'destino' => $avionData['destino'],
             ];
+            $listaAviones [] = $avion;
         }
 
         return $listaAviones;
