@@ -125,4 +125,35 @@ $app->post('/nuevoAvion', function (Request $request, Response $response, $args)
 
 });
 
+$app->get('/aviones/asignarVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
+    $template = $twig->load('formularioAsignarAvionAVuelo.html');
+    $response->getBody()->write(
+        $template->render([
+            'Titulo' => 'Gabriel Airlines',
+            'Error' => ($args['error'] == 'error') ? true : false,
+        ])
+    );
+
+    return $response;
+
+});
+
+$app->post('/asignarVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
+    $lista = $request->getParsedBody();
+    $result = $vuelosService->habilitarNuevoAvion($lista['puestos'], $lista['ubicacion']);
+    
+    if ($result == false) {
+        $response = $response->withStatus(302);
+        $response = $response->withHeader('Location', '/aviones/nuevoAvion/error');
+
+        return $response;
+
+    }
+    $response = $response->withStatus(302);
+    $response = $response->withHeader('Location', '/aviones');
+
+    return $response;
+
+});
+
 $app->run();
