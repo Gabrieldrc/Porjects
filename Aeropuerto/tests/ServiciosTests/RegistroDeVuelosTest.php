@@ -52,6 +52,24 @@ final class RegistroDeVuelosTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Madrid, España', $vuelosConDestino[0]['destino']);
     }
 
+    public function testMostrarVuelos()
+    {
+        $this->rService->registrarVuelo('CABA, Argentina', 'Madrid, España');
+        $this->rService->registrarVuelo('CABA, Argentina', 'Los Angeles, Estados Unidos');
+        $this->rService->registrarVuelo('CABA, Argentina', 'Estocolmo, Suecia');
+        $vuelos = $this->rService->mostrarVuelos();
+        $this->assertEquals(3, count($vuelos));
+        $this->assertEquals('Madrid, España', $vuelos[0]['destino']);
+    }
+
+    public function testMostrarVuelosIdVuelo()
+    {
+        $this->rService->registrarVuelo('CABA, Argentina', 'Madrid, España');
+        $vuelo = $this->rService->mostrarVuelos();
+        $vueloDos = $this->rService->mostrarVuelosIdVuelo($vuelo[0]['idVuelo']);
+        $this->assertEquals($vuelo[0]['destino'], $vueloDos['destino']);
+    }
+
     public function testAsignarAvionEnRegistro()
     {
         $this->rService->registrarVuelo('CABA, Argentina', 'Madrid, España');

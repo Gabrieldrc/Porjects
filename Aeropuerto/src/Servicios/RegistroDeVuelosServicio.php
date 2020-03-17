@@ -94,8 +94,31 @@ class RegistroDeVuelosServicio
             ];
             $vuelos[] = $vuelo;
         }
-    
+
         return $vuelos;
+
+    }
+
+    public function mostrarVuelosIdVuelo($idVuelo)
+    {
+        $datos = $this->collection->findOne(
+            [
+                'idVuelo' => $idVuelo,
+            ]
+        );
+        if (is_null($datos)) {
+            return null;
+        }
+        $vuelo = 
+        [
+            'idVuelo' => $datos['idVuelo'],
+            'origen' => $datos['origen'],
+            'destino' => $datos['destino'],
+            'done' => $datos['done'],
+            'avionAsignado' => $datos['avionAsignado'],
+        ];
+
+        return $vuelo;
 
     }
 
