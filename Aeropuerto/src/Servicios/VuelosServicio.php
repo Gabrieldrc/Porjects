@@ -26,33 +26,33 @@ class VuelosServicio
 
     }
 
-    public function buscarAvionSinVuelo($ubicacion)
+    // public function buscarAvionSinVuelo($ubicacion)
+    // {
+    //     $avionData = $this->collection->findOne([
+    //        'ubicacion' => $ubicacion,
+    //        'idVuelo' => 'No Asignado',
+    //    ]);
+    //     if (! is_null($avionData)) {
+    //         $avion = new Avion(
+    //             $avionData['avionId'],
+    //             $avionData['puestos'],
+    //             $avionData['ubicacion'],
+    //             $avionData['idVuelo'],
+    //             $avionData['destino']
+    //         );
+
+    //         return $avion;
+
+    //     }
+
+    //     return new AvionFalse();
+
+    // }
+
+    public function buscarAvionPorIdAvion($avionId)
     {
         $avionData = $this->collection->findOne([
-           'ubicacion' => $ubicacion,
-           'idVuelo' => 'No Asignado',
-       ]);
-        if (! is_null($avionData)) {
-            $avion = new Avion(
-                $avionData['avionId'],
-                $avionData['puestos'],
-                $avionData['ubicacion'],
-                $avionData['idVuelo'],
-                $avionData['destino']
-            );
-
-            return $avion;
-
-        }
-
-        return new AvionFalse();
-
-    }
-
-    public function buscarAvionPorVueloId($idVuelo)
-    {
-        $avionData = $this->collection->findOne([
-           'idVuelo' => $idVuelo,
+           'avionId' => $avionId,
        ]);
         if (! is_null($avionData)) {
             $avion = new Avion(
@@ -96,13 +96,13 @@ class VuelosServicio
 
     }
 
-    public function asignarVuelo($idVuelo, $ubicacion, $destino)
+    public function asignarVuelo($avionId, $idVuelo)
     {
-        $avion = $this->buscarAvionSinVuelo($ubicacion);
+        $avion = $this->buscarAvionPorIdAvion($avionId);
         if ($avion instanceof Avion) {
             $avion->asignarIdVuelo($idVuelo);
             $updateResult = $this->collection->updateOne(
-                ['avionId' => $avion->getAvionId()],
+                ['avionId' => $avion->getAvionId(), 'ubicacion' => $avion->get],
                 [
                     '$set' => ['idVuelo' => $idVuelo, 'destino' => $destino],
                 ]
