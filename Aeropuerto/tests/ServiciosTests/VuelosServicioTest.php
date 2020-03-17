@@ -64,7 +64,7 @@ final class VuelosServicioTest extends \PHPUnit\Framework\TestCase
         $this->vService->habilitarNuevoAvion(100,'CABE');
         $result = $this->vService->buscarAviones();
         $result = $this->vService->asignarVuelo($result[0]['avionId'], 'blabla');
-        $this->assertFalse($result);
+        $this->assertTrue($result instanceof \Src\Modelos\AvionFalse);
     }
 
     public function testAsignarVueloTrue()
@@ -75,7 +75,8 @@ final class VuelosServicioTest extends \PHPUnit\Framework\TestCase
         $result = $this->vService->buscarAviones();
         $vuelos = $this->rService->mostrarVuelos('CABA');
         $result = $this->vService->asignarVuelo($result[0]['avionId'], $vuelos[0]['idVuelo']);
-        $this->assertTrue($result);
+        $this->assertTrue($result instanceof \Src\Modelos\Avion);
+        $this->assertFalse(is_subclass_of($result, '\Src\Modelos\AvionFalse'));
     }
 
     // public function testRealizarVueloFalse()

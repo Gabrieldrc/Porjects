@@ -23,8 +23,8 @@ $twig = new \Twig\Environment($loader, [
 ]);
 
 $conn = new \MongoDB\Client("mongodb://localhost");
-$vuelosService = new \Src\Servicios\VuelosServicio($conn->vuelosServicios->aviones);
 $registroDeVuelosServicio = new \Src\Servicios\RegistroDeVuelosServicio($conn->registroDeVuelosServicios->registroDeVuelos);
+$vuelosService = new \Src\Servicios\VuelosServicio($conn->vuelosServicios->aviones, $registroDeVuelosServicio);
 
 $app = AppFactory::create();
 
@@ -125,7 +125,7 @@ $app->post('/nuevoAvion', function (Request $request, Response $response, $args)
 
 });
 
-$app->get('/aviones/asignarVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
+$app->get('/aviones/asignarVuelo/{error}', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
     $template = $twig->load('formularioAsignarAvionAVuelo.html');
     $response->getBody()->write(
         $template->render([
@@ -138,13 +138,13 @@ $app->get('/aviones/asignarVuelo', function (Request $request, Response $respons
 
 });
 
-$app->post('/asignarVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
+$app->post('/asignarVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService, $registroDeVuelosServicio) {
     $lista = $request->getParsedBody();
-    $result = $vuelosService->habilitarNuevoAvion($lista['puestos'], $lista['ubicacion']);
-    
-    if ($result == false) {
+    $avion = $vuelosService->asignarVuelo($lista['avionId'], $lista['idVuelo']);
+    $result = $registroDeVuelosServicio->asignarAvionEnRegistro($avion);
+    if (! $result) {
         $response = $response->withStatus(302);
-        $response = $response->withHeader('Location', '/aviones/nuevoAvion/error');
+        $response = $response->withHeader('Location', '/aviones/asignarVuelo/error');
 
         return $response;
 
