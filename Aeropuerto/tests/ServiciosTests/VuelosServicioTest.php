@@ -4,6 +4,7 @@ namespace Tests\ServiciosTests;
 
 use Src\Modelos\Avion;
 use \Src\Servicios\VuelosServicio;
+use \Src\Servicios\RegistroDeVuelosServicio;
 
 final class VuelosServicioTest extends \PHPUnit\Framework\TestCase
 {
@@ -11,8 +12,10 @@ final class VuelosServicioTest extends \PHPUnit\Framework\TestCase
     {
         $conn = new \MongoDB\Client("mongodb://localhost");
         $this->VuelosCollection = $conn->testVuelosServicio->aviones;
+        $this->RegistroCollection = $conn->testRegistroDeVuelo->registros;
+        $this->rService = new RegistroDeVuelosServicio($this->RegistroCollection);
         $this->VuelosCollection->drop();
-        $this->vService = new VuelosServicio($this->VuelosCollection);
+        $this->vService = new VuelosServicio($this->VuelosCollection, $this->rService);
     }
 
     public function testHabilitarNuevoAvion()
@@ -23,67 +26,58 @@ final class VuelosServicioTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(is_null($vuelo));
     }
 
-    public function testBuscarAvion()
+    public function testBuscarAvionesLista()
     {
-        $return = $this->vService->habilitarNuevoAvion(100,'CABA');
-        $avion = $this->vService->buscarAvionSinVuelo('CABA');
-        $this->assertTrue($avion instanceof \Src\Modelos\Avion);
+        $result = $this->vService->buscarAviones();
+        $this->assertEquals(0, count($result));
+        $this->vService->habilitarNuevoAvion(100,'CABA');
+        $this->vService->habilitarNuevoAvion(100,'CABE');
+        $this->vService->habilitarNuevoAvion(100,'CABI');
+        $result = $this->vService->buscarAviones();
+        $this->assertEquals(3, count($result));
+        $this->assertEquals('CABA', $result[0]['ubicacion']);
+        $this->assertEquals('CABE', $result[1]['ubicacion']);
+        $this->assertEquals('CABI', $result[2]['ubicacion']);
     }
 
-    public function testNoSeEncuentraAvion()
+    public function testBuscarAvionesPorId()
     {
-        $return = $this->vService->habilitarNuevoAvion(100,'CABA');
-        $avion = $this->vService->buscarAvionSinVuelo('Blabla');
-        $this->assertTrue($avion instanceof \Src\Modelos\AvionFalse);
+        $this->vService->habilitarNuevoAvion(100,'CABA');
+        $this->vService->habilitarNuevoAvion(100,'CABE');
+        $this->vService->habilitarNuevoAvion(100,'CABI');
+        $result = $this->vService->buscarAviones();
+        $vueloUno = $this->vService->buscarAvionPorIdAvion($result[0]['avionId']);
+        $vueloDos = $this->vService->buscarAvionPorIdAvion($result[1]['avionId']);
+        $vueloTres = $this->vService->buscarAvionPorIdAvion($result[2]['avionId']);
+        $this->assertEquals($vueloUno->getAvionId(), $result[0]['avionId']);
+        $this->assertEquals($vueloDos->getAvionId(), $result[1]['avionId']);
+        $this->assertEquals($vueloTres->getAvionId(), $result[2]['avionId']);
+        $this->assertTrue( is_subclass_of(
+            $this->vService->buscarAvionPorIdAvion('qefw2f'),
+            '\Src\Modelos\Avion')
+        );
     }
 
-    public function testAsignarVuelo()
+    public function testAsignarVueloFalse()
     {
         $this->vService->habilitarNuevoAvion(100,'CABA');
-        $result = $this->vService->asignarVuelo('a1b2c3d4','CABA', 'Madrid');
-        $this->assertTrue(! is_subclass_of($result, '\Src\Modelos\Avion'));
-        $this->assertTrue($result instanceof Avion);
+        $this->vService->habilitarNuevoAvion(100,'CABE');
+        $result = $this->vService->buscarAviones();
+        $result = $this->vService->asignarVuelo($result[0]['avionId'], 'blabla');
+        $this->assertFalse($result);
     }
 
-    public function testNoAsignarVuelo()
+    public function testAsignarVueloTrue()
     {
         $this->vService->habilitarNuevoAvion(100,'CABA');
-        $result = $this->vService->asignarVuelo('a1b2c3d4','CABA', 'Madrid');
-        $this->assertTrue(! is_subclass_of($result, '\Src\Modelos\Avion'));
-        $this->assertTrue($result instanceof Avion);
-        $result = $this->vService->asignarVuelo('a1b2c3d4','CABA', 'Madrid');
-        $this->assertTrue(is_subclass_of($result, '\Src\Modelos\Avion'));
+        $this->vService->habilitarNuevoAvion(100,'CABE');
+        $this->rService->registrarVuelo('CABA','VACA');
+        $result = $this->vService->buscarAviones();
+        $vuelos = $this->rService->mostrarVuelos('CABA');
+        $result = $this->vService->asignarVuelo($result[0]['avionId'], $vuelos[0]['idVuelo']);
+        $this->assertTrue($result);
     }
 
-    public function testBuscarAvionPorVueloId()
-    {
-        $this->vService->habilitarNuevoAvion(100,'CABA');
-        $this->vService->asignarVuelo('a1b2c3d4','CABA', 'Madrid');
-        $avion = $this->vService->buscarAvionPorVueloId('a1b2c3d4');
-        $this->assertFalse($avion instanceof \Src\Modelos\AvionFalse);
-    }
-
-    public function testNoSeEncuentraAvionPorVueloId()
-    {
-        $this->vService->habilitarNuevoAvion(100,'CABA');
-        $avion = $this->vService->buscarAvionPorVueloId('Blabla');
-        $this->assertTrue($avion instanceof \Src\Modelos\AvionFalse);
-    }
-
-    public function testRealizarVueloFalse()
-    {
-        $this->vService->habilitarNuevoAvion(100,'CABA');
-        $this->vService->asignarVuelo('a1b2c3d4','CABA', 'Madrid');
-        $avion = $this->vService->realizarVuelo('111111');
-        $this->assertTrue($avion instanceof \Src\Modelos\AvionFalse);
-    }
-    
-    public function testRealizarVuelo()
-    {
-        $this->vService->habilitarNuevoAvion(100,'CABA');
-        $this->vService->asignarVuelo('a1b2c3d4','CABA', 'Madrid');
-        $avion = $this->vService->realizarVuelo('a1b2c3d4');
-        $this->assertFalse($avion instanceof \Src\Modelos\AvionFalse);
-    }
+    // public function testRealizarVueloFalse()
 
 }

@@ -4,12 +4,14 @@ namespace Src\Servicios;
 
 use Src\Modelos\Avion;
 use Src\Modelos\AvionFalse;
+use Src\Servicios\RegistroDeVuelosServicio;
 
 class VuelosServicio
 {
-    public function __construct($collection)
+    public function __construct($collection, RegistroDeVuelosServicio $rServicio)
     {
         $this->collection = $collection;
+        $this->rServicio = $rServicio;
     }
 
     public function habilitarNuevoAvion(int $puestos, string $ubicacion)
@@ -25,29 +27,6 @@ class VuelosServicio
         return $insertOneResult->getInsertedCount();
 
     }
-
-    // public function buscarAvionSinVuelo($ubicacion)
-    // {
-    //     $avionData = $this->collection->findOne([
-    //        'ubicacion' => $ubicacion,
-    //        'idVuelo' => 'No Asignado',
-    //    ]);
-    //     if (! is_null($avionData)) {
-    //         $avion = new Avion(
-    //             $avionData['avionId'],
-    //             $avionData['puestos'],
-    //             $avionData['ubicacion'],
-    //             $avionData['idVuelo'],
-    //             $avionData['destino']
-    //         );
-
-    //         return $avion;
-
-    //     }
-
-    //     return new AvionFalse();
-
-    // }
 
     public function buscarAvionPorIdAvion($avionId)
     {
@@ -99,31 +78,35 @@ class VuelosServicio
     public function asignarVuelo($avionId, $idVuelo)
     {
         $avion = $this->buscarAvionPorIdAvion($avionId);
-        if ($avion instanceof Avion) {
+        $vuelo = $this->rServicio->mostrarVuelosIdVuelo($idVuelo);
+        if ($avion instanceof Avion
+        && ! is_subclass_of($avion, '\Src\Modelos\Avion')
+        && ! is_null($vuelo)) {
+            // var_dump($vuelo);die();
             $avion->asignarIdVuelo($idVuelo);
             $updateResult = $this->collection->updateOne(
-                ['avionId' => $avion->getAvionId(), 'ubicacion' => $avion->get],
+                ['avionId' => $avion->getAvionId(), 'ubicacion' => $avion->getUbicacion()],
                 [
-                    '$set' => ['idVuelo' => $idVuelo, 'destino' => $destino],
+                    '$set' => ['idVuelo' => $idVuelo, 'destino' => $vuelo['destino']],
                 ]
             );
             if($updateResult->getModifiedCount() >0){
-                return $avion;
+                return true;
             } else {
 
-                return new AvionFalse();
+                return false;
 
             }
         } else {
 
-            return new AvionFalse();
+            return false;
 
         }
     }
 
-    public function realizarVuelo($idVuelo)
+    public function realizarVuelo($avionId)
     {
-        $avion = $this->buscarAvionPorVueloId($idVuelo);
+        $avion = $this->buscarAvionPorIdAvion($avionId);
         $avion->realizarVuelo();
         if (! ( is_subclass_of($avion, '\Src\Modelos\Avion')) && $avion instanceof Avion) {
             $updateResult = $this->collection->updateOne(

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Aeropuerto: Listado de aviones</h1>
+    <div>
+        <h4>Asignar un avion a un vuelo:</h4>
+        <form action="/asignarVuelo" method="post">
+            <p>Id Avion:</p>
+            <input type="text" name="idAvion">
+            <p>Id Vuelo:</p>
+            <input type="text" name="idVuelo">
+            <input type="submit" value="Asignar">
+        </form>
+    </div>
+    {% if Error == 'error' %}
+        <p style="color:#FF0000";>El avion no pudo ser habilitado. Intente mas tarde.</p>
+    {% endif %}
+    <a href = "/aviones">Regresar</a></br></br></br>
+{% endblock %}
