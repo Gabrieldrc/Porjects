@@ -91,15 +91,15 @@ class VuelosServicio
                 ]
             );
             if($updateResult->getModifiedCount() >0){
-                return true;
+                return $avion;
             } else {
 
-                return false;
+                return new AvionFalse();
 
             }
         } else {
 
-            return false;
+            return new AvionFalse();
 
         }
     }
