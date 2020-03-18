@@ -28,132 +28,18 @@ $vuelosService = new \Src\Servicios\VuelosServicio($conn->vuelosServicios->avion
 
 $app = AppFactory::create();
 
-$app->get('/home', function (Request $request, Response $response, $args) use ($twig) {
-    $template = $twig->load('index.html');
-    $response->getBody()->write(
-        $template->render(['Titulo' => 'Gabriel Airlines'])
-    );
+$app->add(function($serverRequest, $requestHandler)
+            use ($twig, $vuelosService, $registroDeVuelosServicio) {
 
-    return $response;
+    $serverRequest = $serverRequest->withAttribute('twig', $twig);
+    $serverRequest = $serverRequest->withAttribute('registroDeVuelosServicio', $registroDeVuelosServicio);
+    $serverRequest = $serverRequest->withAttribute('vuelosService', $vuelosService);
 
-});
-
-$app->get('/registro', function (Request $request, Response $response, $args) use ($twig, $registroDeVuelosServicio) {
-    $template = $twig->load('registro.html');
-    $response->getBody()->write(
-        $template->render([
-            'Titulo' => 'Gabriel Airlines',
-            'listaVuelos' => $registroDeVuelosServicio->mostrarVuelos(),
-            ])
-    );
-
-    return $response;
+    return $requestHandler->handle($serverRequest);
 
 });
 
-$app->get('/registro/nuevoVuelo/{error}', function (Request $request, Response $response, $args) use ($twig) {
-    $template = $twig->load('formularioNuevoVuelo.html');
-    $response->getBody()->write(
-        $template->render([
-            'Titulo' => 'Gabriel Airlines',
-            'Error' => ($args['error'] == 'error') ? true : false,
-        ])
-    );
-
-    return $response;
-
-});
-
-$app->post('/nuevoVuelo', function (Request $request, Response $response, $args) use ($twig, $registroDeVuelosServicio) {
-    $lista = $request->getParsedBody();
-    $result = $registroDeVuelosServicio->registrarVuelo($lista['origen'], $lista['destino']);
-    if ($result == false) {
-        $response = $response->withStatus(302);
-        $response = $response->withHeader('Location', '/registro/nuevoVuelo/error');
-
-        return $response;
-
-    }
-    $response = $response->withStatus(302);
-    $response = $response->withHeader('Location', '/registro');
-
-    return $response;
-
-});
-
-$app->get('/aviones', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
-    $template = $twig->load('aviones.html');
-    $response->getBody()->write(
-        $template->render([
-            'Titulo' => 'Gabriel Airlines',
-            'listaVuelos' => $vuelosService->buscarAviones(),
-            ])
-    );
-
-    return $response;
-
-});
-
-$app->get('/aviones/nuevoAvion/{error}', function (Request $request, Response $response, $args) use ($twig) {
-    $template = $twig->load('formularioNuevoAvion.html');
-    $response->getBody()->write(
-        $template->render([
-            'Titulo' => 'Gabriel Airlines',
-            'Error' => ($args['error'] == 'error') ? true : false,
-        ])
-    );
-
-    return $response;
-
-});
-
-$app->post('/nuevoAvion', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
-    $lista = $request->getParsedBody();
-    $result = $vuelosService->habilitarNuevoAvion($lista['puestos'], $lista['ubicacion']);
-    
-    if ($result == false) {
-        $response = $response->withStatus(302);
-        $response = $response->withHeader('Location', '/aviones/nuevoAvion/error');
-
-        return $response;
-
-    }
-    $response = $response->withStatus(302);
-    $response = $response->withHeader('Location', '/aviones');
-
-    return $response;
-
-});
-
-$app->get('/aviones/asignarVuelo/{error}', function (Request $request, Response $response, $args) use ($twig, $vuelosService) {
-    $template = $twig->load('formularioAsignarAvionAVuelo.html');
-    $response->getBody()->write(
-        $template->render([
-            'Titulo' => 'Gabriel Airlines',
-            'Error' => ($args['error'] == 'error') ? true : false,
-        ])
-    );
-
-    return $response;
-
-});
-
-$app->post('/asignarVuelo', function (Request $request, Response $response, $args) use ($twig, $vuelosService, $registroDeVuelosServicio) {
-    $lista = $request->getParsedBody();
-    $avion = $vuelosService->asignarVuelo($lista['avionId'], $lista['idVuelo']);
-    $result = $registroDeVuelosServicio->asignarAvionEnRegistro($avion);
-    if (! $result) {
-        $response = $response->withStatus(302);
-        $response = $response->withHeader('Location', '/aviones/asignarVuelo/error');
-
-        return $response;
-
-    }
-    $response = $response->withStatus(302);
-    $response = $response->withHeader('Location', '/aviones');
-
-    return $response;
-
-});
+$controllerService = new \Src\Servicios\ControllerServicio();
+$controllerService->setup($app, __DIR__ . '/../src/Controllers/' );
 
 $app->run();
